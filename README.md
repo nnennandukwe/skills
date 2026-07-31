@@ -30,7 +30,7 @@ Each skill enforces one form of evidence discipline. The through-line:
 
 ## Install
 
-Requires [Node.js](https://nodejs.org). Install every skill:
+Requires [Node.js](https://nodejs.org) 22.20 or newer — the installer declares that engine and older versions emit an `EBADENGINE` warning. Install every skill:
 
 ```bash
 npx skills add nnennandukwe/skills
