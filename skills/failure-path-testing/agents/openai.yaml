@@ -1,0 +1,4 @@
+interface:
+  display_name: "Failure Path Testing"
+  short_description: "Add high-value negative-path integration tests"
+  default_prompt: "Use $failure-path-testing to design and implement failure-first integration tests for workflow gates, recovery paths, and blocked state transitions."

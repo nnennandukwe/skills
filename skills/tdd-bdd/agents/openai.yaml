@@ -1,0 +1,4 @@
+interface:
+  display_name: "TDD + BDD"
+  short_description: "Drive changes from behavior specs and failing tests"
+  default_prompt: "Use $tdd-bdd to plan and implement a behavior-first change with Given/When/Then scenarios, failing tests first, then the minimum code and refactor pass."

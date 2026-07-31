@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow Invariants"
+  short_description: "Enforce workflow state transitions and guards"
+  default_prompt: "Use $workflow-invariants to model state transitions, encode invariants, and add regression tests for workflow correctness."

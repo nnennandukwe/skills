@@ -1,0 +1,4 @@
+interface:
+  display_name: "README Creation"
+  short_description: "Create literal engineer-first software READMEs"
+  default_prompt: "Use $readme-creation to create or rewrite this README with exact outputs, users, downstream use, setup, and workflow boundaries."

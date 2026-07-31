@@ -1,0 +1,4 @@
+interface:
+  display_name: "DX Audit"
+  short_description: "Audit developer experience across nine dimensions and report what could not be verified"
+  default_prompt: "Use $dx-audit to review the changed developer interface and report prioritized DX findings plus verification gaps."

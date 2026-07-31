@@ -1,0 +1,4 @@
+interface:
+  display_name: "README Audit"
+  short_description: "Audit READMEs for literal engineer-first clarity"
+  default_prompt: "Use $readme-audit to audit this README for literal product definition, exact outputs, developer usability, and honest workflow boundaries."

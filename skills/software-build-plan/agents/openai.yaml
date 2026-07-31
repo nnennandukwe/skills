@@ -1,0 +1,4 @@
+interface:
+  display_name: "Software Build Plan"
+  short_description: "Plan a bounded software change before writing code"
+  default_prompt: "Use $software-build-plan to produce an implementation-ready build plan for this ticket before any code changes."
