@@ -18,9 +18,12 @@
 | Interface and focused audits | `<available-skill>` | <changed surface to audit and the blocking finding threshold> |
 | Final review | `code-review` | Review the complete change set against the fixed point across separate Standards and Spec axes. |
 
+Add rows as needed so every applicable execution stage is represented by at
+least one selected skill.
+
 Coverage notes:
 
-- <non-obvious applicable skill deliberately omitted, unavailable stack-specific skill, or "None">
+- <obvious overlapping skill deliberately omitted, unavailable stack-specific skill and alternate coverage, or "None">
 
 ## Scope
 
@@ -97,42 +100,15 @@ Vertical slices:
    review.
 5. Pin the review fixed point and run the current agent's `code-review` skill
    against the complete change set, preserving separate Standards and Spec
-   findings. This is Reviewer A.
-6. If the author is not Claude and the Claude CLI is available, run Reviewer B
-   read-only against the same fixed point, standards, specification, and
-   complete change set. Select `sonnet` for routine bounded work or `opus` for
-   security, authorization, concurrency, persistence, transactions, schemas,
-   migrations, cryptography, substantial architecture, or disputed P0/P1
-   findings:
-
-   ```bash
-   claude --print \
-     --model <sonnet-or-opus> \
-     --effort high \
-     --permission-mode plan \
-     "<focused read-only code-review prompt>"
-   ```
-
-   Always pass `--model`. Do not use Fable, `claude-fable-5`, configured
-   defaults, `--fallback-model`, or models outside Sonnet/Opus. If the selected
-   model cannot complete, retry once with the other approved alias. If neither
-   completes, or if Claude authored the change, record Reviewer B as `SKIPPED`
-   with the reason and continue with mandatory Reviewer A. Never present a
-   skipped supplemental review as passed.
-
-   Bound the prompt to one focused pass over the fixed diff, applicable
-   standards, specification, and directly owning code. Forbid edits, network
-   use, subagents, and the full test suite. Require only confirmed P0-P3
-   findings with file, line, and evidence, or `CLEAN`.
-
-7. Reproduce every finding at the current head, retain reviewer/axis
+   findings.
+6. Reproduce every finding at the current head, retain Standards/Spec axis
    provenance, deduplicate overlapping root causes, and resolve every confirmed
    actionable finding. Record evidence for false positives; require explicit
    user approval for any deliberate exception.
-8. Run affected tests and the full repository suite, then rerun Reviewer A and
-   Reviewer B if it previously completed. Any later code change makes the
-   review evidence stale. Repeat until no confirmed actionable finding remains.
-9. Open one pull request with the repository-required ticket link or closing
+7. Run affected tests and the full repository suite, then rerun `code-review`
+   against the complete change set. Any later code change makes the review
+   evidence stale. Repeat until no confirmed actionable finding remains.
+8. Open one pull request with the repository-required ticket link or closing
    reference.
 
 ## Test Plan
@@ -148,28 +124,21 @@ Verification commands:
 
 ```bash
 <repository-native command>
-claude --print \
-  --model <sonnet-or-opus> \
-  --effort high \
-  --permission-mode plan \
-  "<focused read-only code-review prompt>"
 ```
 
 Manual acceptance:
 
 - <manual proof that remains necessary, or "None">
-- Reviewer A and any completed Reviewer B findings were reproduced and merged
-  into one remediation ledger without losing reviewer or Standards/Spec
-  provenance; a skipped Reviewer B is recorded as `SKIPPED`, not passed.
+- `code-review` findings were reproduced and merged into one remediation ledger
+  without losing Standards/Spec provenance.
 
 ## Definition Of Done
 
 - <observable capability or invariant>
 - <observable compatibility result>
 - <required automated checks pass>
-- Mandatory Reviewer A passes against the final complete change set with no
-  confirmed actionable finding unresolved; Reviewer B either passes with a
-  selected Sonnet/Opus model or is explicitly recorded as `SKIPPED`.
+- Mandatory `code-review` passes against the final complete change set with no
+  confirmed actionable finding unresolved.
 - <explicit non-goal has not leaked into the build>
 
 ## Assumptions And Defaults

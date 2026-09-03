@@ -33,9 +33,9 @@ coverage, not the shortest possible skill list.
 | Focused audits | Which likely defect classes should be checked after implementation? | Drift, dead code, errors, boundaries, abstractions, names, idioms |
 | Review and remediation | What review skill owns the complete-diff gate before the pull request? | The review workflow required by this skill variant |
 
-Not every stage needs a skill. A stage may be covered by repository-native
-commands or may genuinely be irrelevant. Make that decision after assessment,
-not by omission.
+Stages that are genuinely irrelevant are outside the execution map. Every stage
+determined to be applicable must have at least one selected available skill;
+repository-native commands supplement that coverage but do not replace it.
 
 ## Selection Standard
 
@@ -72,14 +72,18 @@ Carry the selection into the rest of the plan:
 - review skills must appear in `Branch And PR Flow` with freshness rules.
 
 If a language- or framework-specific skill would materially help but none is
-available, say so in a short coverage note instead of implying that the stack
-was assessed and covered.
+available, identify which selected available skill covers that execution stage
+and note the limitation. If no available skill can cover an applicable stage,
+the plan is not implementation-ready; surface the coverage gap instead of
+presenting the stage as covered.
 
 ## Anti-Patterns
 
 - Listing only the final review skill.
 - Naming design or review skills while leaving implementation and test work
   unguided.
+- Treating a repository command or an explanation as skill coverage for an
+  applicable execution stage.
 - Copying every available audit skill into the plan without a concrete risk.
 - Naming a skill without reading its instructions or integrating its required
   workflow.

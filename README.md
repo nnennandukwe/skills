@@ -23,7 +23,7 @@ Each skill enforces one form of evidence discipline. The through-line:
 
 **Select skills for execution, not decoration.** `software-build-plan` assesses the skills available in the active agent against the build's architecture, stack, tests, hardening risks, interfaces, audits, and review needs. Every selected skill must own a concrete step and observable evidence in the rest of the plan.
 
-**Review standards and intent separately.** `code-review` keeps repository Standards and the originating Spec as independent axes so correct-looking code cannot mask the wrong behavior, and exact feature work cannot mask a repository-rule violation. The build plan requires that primary review. It may add a bounded Claude CLI review when that supplies an independent model family and the CLI is available, but the optional review can be recorded as `SKIPPED`; no external account is required to complete the public workflow.
+**Review standards and intent separately.** `code-review` keeps repository Standards and the originating Spec as independent axes so correct-looking code cannot mask the wrong behavior, and exact feature work cannot mask a repository-rule violation. The build plan requires this review before a pull request; no external review service or account is required.
 
 **Test the failure path.** `failure-path-testing` and `workflow-invariants` start from what must *not* happen — the transition that should be refused, the stage that should stay blocked, the empty config that should fail loudly instead of resolving to a wrong default.
 
@@ -88,7 +88,7 @@ The skills separate what an agent proposes from what a human accepts.
 
 - A build plan is a proposal. Nothing in it is implemented, reviewed, or merged by writing it down.
 - An audit reports findings. It does not fix them, and `dx-audit` never modifies files.
-- The primary review gate is a documented requirement, not an automated enforcement mechanism. A supplemental independent review is conditional and may be recorded as `SKIPPED`; running reviews and resolving confirmed findings remains part of the implementation workflow.
+- The `code-review` gate is a documented requirement, not an automated enforcement mechanism. Running the review and resolving confirmed findings remains part of the implementation workflow.
 - `tdd-bdd`, `failure-path-testing`, and `workflow-invariants` write tests and code. Review their changes as you would any contribution.
 
 ## Layout
