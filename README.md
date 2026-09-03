@@ -6,7 +6,8 @@ Agent skills for planning, testing, auditing, and documenting software changes. 
 
 | Skill | What it does | Writes files |
 |---|---|---|
-| [`software-build-plan`](skills/software-build-plan) | Produces an implementation-ready build plan for one ticket: contracts, file seams, commit sequence, test plan, and a pre-PR dual-review gate | No — planning is read-only by default |
+| [`software-build-plan`](skills/software-build-plan) | Produces an implementation-ready build plan for one ticket, including a deep assessment of available execution skills, contracts, file seams, test strategy, and pre-PR proof gates | No — planning is read-only by default |
+| [`code-review`](skills/code-review) | Reviews a complete local change set against a fixed point on separate repository Standards and originating Spec axes | No — review is read-only by default |
 | [`dx-audit`](skills/dx-audit) | Audits the changed developer interface across nine dimensions and reports prioritized findings plus the claims it could not verify | No |
 | [`workflow-invariants`](skills/workflow-invariants) | Designs and tests state-machine invariants for multi-stage pipelines: transition tables, guards, and the tests that hold them | Yes — guards and tests |
 | [`failure-path-testing`](skills/failure-path-testing) | Writes failure-first integration tests for workflow gates and recovery paths, starting from the path that must stay blocked | Yes — tests |
@@ -20,7 +21,9 @@ Each skill enforces one form of evidence discipline. The through-line:
 
 **Plan before code.** `software-build-plan` locks contracts, test seams, and a commit sequence before implementation starts, and keeps planning separate from writing.
 
-**Review with a different model family.** The build plan's pre-PR gate requires two reviews, and the second must come from a different model family than the one that wrote the code. A second pass from the same model shares its blind spots. An alias that silently resolves back to the author's family collapses the independence the gate exists to provide, so the model id is pinned rather than defaulted.
+**Select skills for execution, not decoration.** `software-build-plan` assesses the skills available in the active agent against the build's architecture, stack, tests, hardening risks, interfaces, audits, and review needs. Every selected skill must own a concrete step and observable evidence in the rest of the plan.
+
+**Review standards and intent separately.** `code-review` keeps repository Standards and the originating Spec as independent axes so correct-looking code cannot mask the wrong behavior, and exact feature work cannot mask a repository-rule violation. The build plan requires that primary review. It may add a bounded Claude CLI review when that supplies an independent model family and the CLI is available, but the optional review can be recorded as `SKIPPED`; no external account is required to complete the public workflow.
 
 **Test the failure path.** `failure-path-testing` and `workflow-invariants` start from what must *not* happen — the transition that should be refused, the stage that should stay blocked, the empty config that should fail loudly instead of resolving to a wrong default.
 
@@ -56,6 +59,15 @@ Use software-build-plan for this ticket.
 
 The agent returns a build plan in the conversation. It does not edit code, create a branch, or open a pull request unless you separately ask for implementation. Save the plan only if you want it in the repository.
 
+For a review of a complete local change set:
+
+```
+Use code-review against origin/main.
+```
+
+The reviewer pins the fixed point, includes committed and working-tree changes,
+and reports Standards and Spec findings separately.
+
 For an audit of work you just finished:
 
 ```
@@ -76,7 +88,7 @@ The skills separate what an agent proposes from what a human accepts.
 
 - A build plan is a proposal. Nothing in it is implemented, reviewed, or merged by writing it down.
 - An audit reports findings. It does not fix them, and `dx-audit` never modifies files.
-- The dual-review gate is a documented requirement, not an automated enforcement mechanism. The plan states which reviews must pass; running them and resolving their findings is your work.
+- The primary review gate is a documented requirement, not an automated enforcement mechanism. A supplemental independent review is conditional and may be recorded as `SKIPPED`; running reviews and resolving confirmed findings remains part of the implementation workflow.
 - `tdd-bdd`, `failure-path-testing`, and `workflow-invariants` write tests and code. Review their changes as you would any contribution.
 
 ## Layout
@@ -85,12 +97,12 @@ The skills separate what an agent proposes from what a human accepts.
 skills/<name>/SKILL.md          the skill — required, every skill has one
 skills/<name>/agents/           agent-specific interface metadata — every skill has one
 skills/<name>/templates/        output templates — software-build-plan only
-skills/<name>/references/       supporting detail loaded on demand — tdd-bdd only
+skills/<name>/references/       supporting detail loaded on demand — software-build-plan and tdd-bdd
 ```
 
 `SKILL.md` is the only file an agent needs; the rest are loaded when the skill calls for them.
 
-`skills/software-build-plan/templates/build-plan.md` is the canonical plan structure and its section order is required, not suggested. `skills/tdd-bdd/references/` holds test-layer selection and scenario-shaping guidance. Each `agents/openai.yaml` supplies a display name and default prompt for Codex; other agents ignore it.
+`skills/software-build-plan/templates/build-plan.md` is the canonical plan structure and its section order is required, not suggested. Its execution-skill reference defines how an agent assesses available skills and carries each selection into concrete implementation and proof steps. `skills/tdd-bdd/references/` holds test-layer selection and scenario-shaping guidance. Each `agents/openai.yaml` supplies a display name and default prompt for Codex; other agents ignore it.
 
 ## Limitations
 

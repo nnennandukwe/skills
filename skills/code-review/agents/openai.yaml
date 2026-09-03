@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review a local change set against standards and spec"
+  default_prompt: "Use $code-review to review my complete local change set against a pinned fixed point on separate Standards and Spec axes."

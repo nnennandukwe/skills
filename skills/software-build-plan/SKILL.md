@@ -74,16 +74,28 @@ The plan should normally fit one reviewable pull request.
   for the whole sequence.
 - Avoid implementation-day estimates unless the user requests estimates.
 
-### 4. Select future skills deliberately
+### 4. Assess and select execution skills
 
-Populate `Skills To Use` only with skills that should materially shape
-execution.
+Read [references/execution-skill-selection.md](references/execution-skill-selection.md)
+and assess the skills available in the current session after the repository and
+build scope are understood.
 
-- State why each skill applies.
-- Use future tense.
-- Do not claim that a skill has already reviewed or verified unimplemented
-  work.
-- Prefer a small set of relevant skills over an exhaustive catalog.
+- Evaluate coverage across context and rules, architecture, stack
+  implementation, behavior and tests, risk hardening, developer interfaces,
+  focused audits, and final review. Not every stage requires a skill, but every
+  applicable stage requires an explicit decision.
+- Read each selected skill's `SKILL.md` completely before finalizing the plan,
+  including only the supporting references required for this task.
+- Select a skill only when it materially changes a concrete implementation,
+  test, audit, or review step. State when it runs, what it governs, and what
+  evidence it must produce.
+- If an obviously relevant available skill is omitted, record the reason when
+  the omission would otherwise be surprising. If a useful language- or
+  framework-specific skill is unavailable, say so briefly.
+- Prefer complete, non-redundant execution coverage. Do not optimize for the
+  smallest list while leaving implementation or hardening work unguided.
+- Use future tense and never imply that listing a skill means its work has
+  already happened.
 
 ### 5. Lock contracts and test seams
 
@@ -98,62 +110,59 @@ Before describing implementation steps:
 - Include negative paths, concurrency paths, rollback behavior, and operator
   recovery when relevant.
 
-### 6. Require dual pre-PR review and remediation
+### 6. Require primary pre-PR review and bounded independent review
 
 Every build plan must include a review gate before opening a pull request.
 
 - Pin one fixed point and review the complete change set against it, including
   committed, staged, unstaged, and untracked files.
-The gate requires two reviews from **different model families**. A second pass
-from the same model that wrote the code shares its blind spots and is not an
-independent review.
 
 **Reviewer A — the primary review.** Run the `code-review` skill available in
 the current agent against the fixed point. Preserve its separate Standards and
-Spec findings.
+Spec findings. Reviewer A is mandatory.
 
-**Reviewer B — the independent review.** Invoke a different agent, in a
-different model family, read-only, against the same fixed point, standards
-sources, specification, and complete change set.
+**Reviewer B — the supplemental independent review.** When the author is not
+Claude and the Claude CLI is available, run one read-only review against the
+same fixed point, standards sources, specification, and complete change set.
 
-- Invoke Reviewer B non-interactively. Most agent CLIs expose a one-shot mode
-  with a model selector, a reasoning-effort setting, and a read-only or
-  plan-only permission mode. The shape is:
+- Select the model from the build risk rather than using a configured default:
+  use `sonnet` for routine bounded work; use `opus` for security,
+  authorization, concurrency, persistence, transactions, schemas, migrations,
+  cryptography, substantial architecture, or disputed P0/P1 findings.
+- Invoke Reviewer B non-interactively and read-only:
 
   ```bash
-  <other-agent-cli> --print \
-    --model <pinned-model-id> \
+  claude --print \
+    --model <sonnet-or-opus> \
     --effort high \
     --permission-mode plan \
     "<focused read-only code-review prompt>"
   ```
 
-  Substitute the CLI, flags, and model id your environment actually provides.
-  What matters is that the reviewer is a different model family from the
-  author, runs read-only, and is pinned rather than left to default.
-- Name the exact model id, effort level, and permission mode in the plan. Do
-  not silently substitute an alias, a "latest" tag, or a different model — an
-  alias can resolve to the same family that wrote the code, which collapses the
-  independence the gate exists to provide. If the pinned reviewer is
-  unavailable, the review gate stays blocked until the user explicitly changes
-  the requirement.
+- Always pass `--model`. Do not use Fable, `claude-fable-5`, a configured
+  default, `--fallback-model`, or a model outside Sonnet/Opus.
+- If the selected model cannot complete, retry once with the other approved
+  alias. If neither completes, record Reviewer B as `SKIPPED` with the failure
+  evidence and continue with mandatory Reviewer A; do not represent the
+  supplemental review as passed.
+- If Claude authored the change, record Reviewer B as `SKIPPED` because Sonnet
+  and Opus do not provide model-family independence from the author.
 - Bound Reviewer B's prompt to one focused pass over the fixed diff, applicable
   standards, specification, and directly owning code. Tell it not to edit, use
   the network, spawn subagents, or run the full test suite. Require only
   confirmed P0-P3 findings with file, line, and evidence, or `CLEAN`.
-- Escalate to a stronger model for security, concurrency, schema or migration
-  changes, or a disputed P0/P1 finding. Pin the escalated model the same way.
-  Escalation is additional review evidence, not the default gate.
 
-- Compare the two reviews, retain reviewer and axis provenance, deduplicate
-  overlapping root causes, and produce one remediation ledger.
+- When Reviewer B completes, compare its findings with Reviewer A, retain
+  reviewer and axis provenance, deduplicate overlapping root causes, and
+  produce one remediation ledger.
 - Reproduce every reported finding at the current head before changing code.
   Mark false positives with evidence; resolve every confirmed actionable
   finding before opening the pull request. Any deliberate exception requires
   explicit user approval and must remain visible in the plan and PR.
 - After remediation, run the affected tests and full repository verification,
-  then rerun both reviews against the final change set. Repeat until no
-  confirmed actionable finding remains.
+  then rerun Reviewer A and Reviewer B if it previously completed. Any later
+  code change makes the review evidence stale. Continue only while the loop is
+  making progress; otherwise stop with the remaining findings and evidence.
 
 Review output is evidence, not authority by itself. A passing test suite does
 not prove that a reported finding is fixed, and a reviewer summary does not
@@ -182,8 +191,15 @@ State:
 ### Skills To Use
 
 Always include `code-review` for the mandatory final Standards/Spec review.
-List any additional skills that should guide implementation or verification,
-with one short reason each.
+Present the selected skills as an execution map with the stage, skill, and
+concrete responsibility in this build. Cover every applicable stage identified
+by the execution-skill assessment, and add a short coverage note for any
+non-obvious omission or unavailable stack-specific skill.
+
+Every selected skill must also appear where it changes the plan: design skills
+in `Component Design`, testing and hardening skills in the vertical slices and
+failure tests, audit skills in the pre-review flow and `Definition Of Done`, and
+review skills in `Branch And PR Flow`.
 
 ### Scope
 
@@ -239,11 +255,10 @@ commit.
 ### Branch And PR Flow
 
 Apply repository-specific Git instructions. Name the proposed branch and the
-ticket-closing or linking reference. Include the mandatory dual-review and
-remediation loop — Reviewer A plus an independent Reviewer B in a different
-model family, both named with their pinned model, effort, and permission mode —
-before the step that opens the pull request. Do not claim the branch or PR
-exists unless it actually does.
+ticket-closing or linking reference. Include mandatory Reviewer A plus the
+bounded Reviewer B selection, invocation, retry/skip behavior, remediation,
+verification, and freshness loop before the step that opens the pull request.
+Do not claim the branch or PR exists unless it actually does.
 
 ### Test Plan
 
@@ -253,8 +268,8 @@ Include:
 - negative and regression cases
 - integration or concurrency coverage when needed
 - exact repository-native verification commands
-- the shared review fixed point, plus the exact invocation for each reviewer
-  including pinned model, effort, and permission mode
+- the shared review fixed point, mandatory `code-review` process, selected
+  Sonnet/Opus Reviewer B command, and its retry/skip condition
 - focused and full verification after review remediation
 - any manual acceptance that automation cannot prove
 
@@ -275,6 +290,16 @@ Before returning a plan, confirm:
 
 - The title ends in `Build Plan`.
 - The plan uses `Skills To Use`, not `Skills Used`.
+- The available skills were assessed after the repository, stack, change
+  surface, and material risks were understood.
+- Every applicable execution stage has skill coverage or an explicit reason it
+  does not need an available skill.
+- Each selected skill's instructions were read and the plan names when it runs,
+  what it governs, and what evidence it produces.
+- The selected skills materially shape the implementation, testing, hardening,
+  audits, or review; the list is neither review-only nor decorative.
+- Any obvious skill omission or unavailable language/framework skill is noted
+  when it affects execution confidence.
 - No time-boxed naming remains unless requested.
 - The live authority and baseline were inspected.
 - In-scope and deferred behavior have clear owners.
@@ -283,13 +308,12 @@ Before returning a plan, confirm:
 - Test seams and failure paths are named.
 - The commit plan follows vertical, behavior-closed slices.
 - Verification commands come from the repository.
-- The Branch and PR flow includes two reviews from different model families
-  against the same complete change set, each with a pinned model, effort, and
-  permission mode.
-- The plan requires findings to be reproduced, compared, deduplicated, and
-  resolved before a pull request is opened.
-- The plan requires both reviews to be rerun after remediation and forbids a
-  silent model fallback.
+- The Branch and PR flow includes mandatory `code-review` plus the bounded
+  Sonnet/Opus Reviewer B selection and explicit `SKIPPED` behavior.
+- The plan requires completed-review findings to be reproduced, compared,
+  deduplicated, and resolved before a pull request is opened.
+- The plan requires reviews to be refreshed after remediation, forbids Fable
+  and silent model fallback, and never presents a skipped review as passed.
 - Definition of Done is observable.
 - Planned, draft, approved, implemented, reviewed, and merged states are not
   conflated.

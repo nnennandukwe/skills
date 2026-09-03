@@ -1,4 +1,4 @@
 interface:
   display_name: "Software Build Plan"
-  short_description: "Plan a bounded software change before writing code"
-  default_prompt: "Use $software-build-plan to produce an implementation-ready build plan for this ticket before any code changes."
+  short_description: "Plan a bounded change with execution skills and proof gates"
+  default_prompt: "Use $software-build-plan to produce an implementation-ready build plan for this ticket, assess the available execution skills deeply, and map each selected skill to concrete work and evidence before any code changes."
