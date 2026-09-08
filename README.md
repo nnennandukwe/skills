@@ -2,6 +2,8 @@
 
 Agent skills for planning, testing, auditing, and documenting software changes. Each skill is a `SKILL.md` file your coding agent reads to follow a specific procedure: plan a bounded change before writing code, audit a developer interface, write the failure-path test first, or check a README against what the software actually does.
 
+For the third-party skills in my workflow, see [Skills I use from other AI builders](skills-i-use-from-other-ai-builders.md), with original-source links and credit to their creators.
+
 ## The skills
 
 | Skill | What it does | Writes files |
