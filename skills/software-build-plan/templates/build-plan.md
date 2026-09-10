@@ -39,6 +39,31 @@ Out of scope:
 
 - `<existing-or-new-path>`: <single responsibility in this build>
 
+Runtime interaction:
+
+```mermaid
+flowchart LR
+  cli["src/cli.ts"] -->|"parsed options"| engine["src/engine.ts"]
+  engine -->|"writes report"| out["new: src/report.ts"]
+```
+
+The block above is illustrative. Replace its nodes with this build's own
+paths: only the files that take part in the runtime interaction appear, each
+with at least one edge, labeled literally. A file that owns no runtime
+interaction stays in the list above and out of the diagram. Mermaid drops
+`<angle-bracket>` placeholders as unknown tags and renders an empty box, which
+is why this block names real paths rather than following the placeholder style
+used elsewhere in this template. A datastore, queue, or external service may
+appear as a node when the flow is unreadable without it. Arrows are runtime
+call or data flow: not imports, not directory nesting, and not authoring
+relationships such as an example file a person copies before the system runs.
+
+Omit the block when no two mapped files interact at runtime, and write
+whichever one case applies:
+
+- "Single-file build; no runtime interaction to diagram."
+- "No two mapped files interact at runtime; no diagram."
+
 ## Dependencies And Settings
 
 - Runtime dependencies:

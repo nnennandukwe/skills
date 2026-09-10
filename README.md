@@ -110,6 +110,8 @@ skills/<name>/references/       supporting detail loaded on demand — software-
 
 `dx-audit` declares `allowed-tools` and `argument-hint`, which Claude Code honors and other agents ignore. Its `--focus` flag works anywhere, but agents pass skill arguments differently — if yours does not substitute an argument variable, state the focus in your request.
 
+The build plan's file-interaction diagram is Mermaid. GitHub renders it as a diagram; agents without Mermaid support show the fenced source. The mapping list above it carries the complete file-to-responsibility mapping in either case.
+
 Skills are instructions, not code. They shape what an agent does; they do not constrain it the way a linter or a test does. Treat their output as a contribution to review, not a guarantee.
 
 ## License

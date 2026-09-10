@@ -178,6 +178,26 @@ or build when known.
 Map each current or proposed file/module to one responsibility. Do not use this
 section as a speculative file dump.
 
+When two or more mapped files interact at runtime, add a Mermaid `flowchart`
+showing that interaction. The mapping list states what each file owns; the
+diagram states the path a request or command takes through them. Arrows carry
+runtime call or data flow: a request, a value, a write. They are not import
+edges, not directory nesting, and not authoring relationships such as an
+example or template file a person copies before the system runs.
+
+The diagram supplements the list and never replaces it. The list remains the
+complete mapping, so the diagram carries only the files that take part in the
+runtime interaction: every node has at least one edge, and a file that owns no
+runtime interaction, such as a lockfile, a README, or an example config, stays
+in the list and out of the diagram. Mark new files as new, and label file
+nodes with literal paths; Mermaid drops `<angle-bracket>` placeholders as
+unknown tags and renders an empty box. A runtime collaborator that is not a
+file in this build, such as a datastore, queue, or external service, may
+appear as a node when the flow is unreadable without it; label it as the
+service it is rather than as a path. When the build touches a single file, or
+no two mapped files interact at runtime, state that instead of drawing a
+diagram.
+
 ### Dependencies And Settings
 
 Name:
@@ -267,6 +287,8 @@ Before returning a plan, confirm:
 - The live authority and baseline were inspected.
 - In-scope and deferred behavior have clear owners.
 - File paths refer to real seams or are clearly marked new.
+- Every node in the file-interaction diagram has at least one edge and its
+  arrows are runtime flow, or the plan states why no diagram applies.
 - Public contracts are explicit enough to test.
 - Test seams and failure paths are named.
 - The commit plan follows vertical, behavior-closed slices.
